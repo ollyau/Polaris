@@ -57,11 +57,11 @@ namespace Polaris
 			set { SetField( ref _locationDetailsOpen, value ); }
 		}
 
-		private readonly ICommand _setNewLocation;
-		public ICommand SetNewLocation { get { return _setNewLocation; } }
+		private readonly CommandHandler _setNewLocation;
+		public CommandHandler SetNewLocation { get { return _setNewLocation; } }
 
-		private readonly ICommand _openBrowserToMap;
-		public ICommand OpenBrowserToMap { get { return _openBrowserToMap; } }
+		private readonly CommandHandler _openBrowserToMap;
+		public CommandHandler OpenBrowserToMap { get { return _openBrowserToMap; } }
 
 		//-----------------------------------------------------------------------------
 
@@ -143,7 +143,12 @@ namespace Polaris
 					if ( client != null && client.Connected )
 					{
 						SimulatorStatus = $"Connected to {client.SimulatorName}.";
-						Locations.Initialize();
+
+						Task.Run( async () =>
+						{
+							await Locations.Initialize();
+							SetNewLocation.RaiseCanExecuteChanged();
+						} );
 					}
 					else
 					{

@@ -189,7 +189,7 @@ namespace Polaris
 		protected virtual void OnRecvOpen( SimConnect sender, SIMCONNECT_RECV_OPEN data )
 		{
 			Connected = true;
-			SimulatorName = data.szApplicationName;
+			SimulatorName = ( data.szApplicationName == "KittyHawk" && data.dwApplicationVersionMajor == 11 ) ? "Microsoft Flight Simulator" : data.szApplicationName;
 			var simVersion = $"{data.dwApplicationVersionMajor}.{data.dwApplicationVersionMinor}.{data.dwApplicationBuildMajor}.{data.dwApplicationBuildMinor}";
 			var scVersion = $"{data.dwSimConnectVersionMajor}.{data.dwSimConnectVersionMinor}.{data.dwSimConnectBuildMajor}.{data.dwSimConnectBuildMinor}";
 			Log.Info( $"Connected to {data.szApplicationName}\r\n    Simulator Version:\t{simVersion}\r\n    SimConnect Version:\t{scVersion}" );

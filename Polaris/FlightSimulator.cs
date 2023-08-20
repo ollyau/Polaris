@@ -39,12 +39,28 @@ namespace Polaris
 			handler?.Invoke( s, e );
 		}
 
+		private string _newLocationShortcut;
+		public string NewLocationShortcut
+		{
+			get { return _newLocationShortcut; }
+			private set { SetField( ref _newLocationShortcut, value ); }
+		}
+
 		//-----------------------------------------------------------------------------
 
 		public FlightSimulator() : base( "Polaris" )
 		{
 			Client.OnRecvException += OnRecvException;
 			Client.OnRecvEvent += OnRecvEvent;
+		}
+
+		protected override void PreInitialize()
+		{
+			base.PreInitialize();
+
+			// get shortcut from settings file
+			NewLocationShortcut = Settings.Get( "new_location_shortcut", "VK_LSHIFT+D" );
+			Log.Debug( $"new location shortcut set to: {NewLocationShortcut}" );
 		}
 
 		protected override void PreUninitialize()
@@ -79,7 +95,7 @@ namespace Polaris
 			// https://learn.microsoft.com/en-us/previous-versions/cc707129(v=msdn.10)?redirectedfrom=MSDN
 			// https://devsupport.flightsimulator.com/questions/10754/mapinputeventtoclientevent-and-ctrl-shift-alt.html
 			Client.MapClientEventToSimEvent( Events.KeyboardClientEvent );
-			Client.MapInputEventToClientEvent( InputGroup.KeyboardShortcut, "VK_LSHIFT+D", Events.KeyboardClientEvent );
+			Client.MapInputEventToClientEvent( InputGroup.KeyboardShortcut, NewLocationShortcut, Events.KeyboardClientEvent );
 
 			// https://devsupport.flightsimulator.com/questions/383/simconnect-setinputgrouppriority-not-working.html
 			Client.SetInputGroupPriority( InputGroup.KeyboardShortcut, ( uint )SIMCONNECT_GROUP_PRIORITY.HIGHEST );

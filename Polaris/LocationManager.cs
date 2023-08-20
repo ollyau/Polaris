@@ -47,16 +47,13 @@ namespace Polaris
 			LocationProviders.Add( provider );
 		}
 
-		public void Initialize()
+		public async Task Initialize()
 		{
 			Locations = new List<Location>();
 			foreach ( var provider in LocationProviders )
 			{
-				Task.Run( async () =>
-				{
-					var locations = await provider.GetLocations();
-					Locations.AddRange( locations );
-				} );
+				var locations = await provider.GetLocations();
+				Locations.AddRange( locations );
 			}
 		}
 	}

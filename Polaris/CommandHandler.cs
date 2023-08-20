@@ -9,6 +9,7 @@ namespace Polaris
 {
 	public class CommandHandler : ICommand
 	{
+		private event EventHandler _internalCanExecuteChanged;
 		private readonly Action _action;
 		private readonly Func<bool> _canExecute;
 
@@ -20,8 +21,16 @@ namespace Polaris
 
 		public event EventHandler? CanExecuteChanged
 		{
-			add { CommandManager.RequerySuggested += value; }
-			remove { CommandManager.RequerySuggested -= value; }
+			add
+			{
+				_internalCanExecuteChanged += value;
+				CommandManager.RequerySuggested += value;
+			}
+			remove
+			{
+				_internalCanExecuteChanged -= value;
+				CommandManager.RequerySuggested -= value;
+			}
 		}
 
 		public bool CanExecute( object? sender )
@@ -32,6 +41,12 @@ namespace Polaris
 		public void Execute( object? sender )
 		{
 			_action();
+		}
+
+		public void RaiseCanExecuteChanged()
+		{
+			EventHandler handler = _internalCanExecuteChanged;
+			handler?.Invoke( this, EventArgs.Empty );
 		}
 	}
 }
